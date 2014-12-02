@@ -8,9 +8,9 @@ public class Client {
     }
 
     public void generate() {
-        int i = 0;
-        while (++i < 10) {
-            taskRunner.run(new TaskImpl<>(), i);
+        int i = 1;
+        while (i < 100) {
+            taskRunner.run(new TaskImpl<>(), i++);
         }
     }
 }

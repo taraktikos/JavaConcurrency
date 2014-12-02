@@ -10,7 +10,7 @@ public class Main {
             }
         });
 
-        t.run();
+        t.start();
 
         Client client = new Client(new TaskRunnerImpl());
         client.generate();
