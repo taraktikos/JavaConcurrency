@@ -1,8 +1,16 @@
 package basic;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class TaskRunnerImpl implements TaskRunner {
 
-    public <R, V> R run(Task<V> task, V value) {
-        return null;
+    Queue<Task> queue = new LinkedList<>();
+
+    public <V> boolean run(Task<V> task, V value) {
+        queue.add(task);
+
+        queue.remove().run(value);
+        return true;
     }
 }

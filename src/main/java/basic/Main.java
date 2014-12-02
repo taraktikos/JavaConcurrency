@@ -11,5 +11,8 @@ public class Main {
         });
 
         t.run();
+
+        Client client = new Client(new TaskRunnerImpl());
+        client.generate();
     }
 }
