@@ -5,7 +5,7 @@ import java.util.Queue;
 
 public class TaskRunnerImpl implements TaskRunner {
 
-    volatile Queue<TaskEntry<Task, Object>> queue = new LinkedList<>();
+    private final Queue<TaskEntry<Task, Object>> queue = new LinkedList<>();
     private final int threadCount;
 
     TaskRunnerImpl() {
