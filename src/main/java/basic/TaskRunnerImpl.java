@@ -1,10 +1,9 @@
 package basic;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
-public class TaskRunnerImpl<V> implements TaskRunner {
+public class TaskRunnerImpl implements TaskRunner {
 
     volatile Queue<TaskEntry<Task, Object>> queue = new LinkedList<>();
     private final int threadCount;
