@@ -5,33 +5,29 @@ import java.util.Queue;
 
 public class TaskRunnerImpl implements TaskRunner {
 
-    private final Queue<TaskEntry<Task, Object>> queue = new LinkedList<>();
-    private final int threadCount;
+    private final Queue<Task> queue = new LinkedList<>();
 
     TaskRunnerImpl() {
-        this(5);
+        this(2);
     }
 
     TaskRunnerImpl(int threadCount) {
-        this.threadCount = threadCount;
-    }
-
-    public <V> boolean run(Task<V> task, V value) {
-        queue.add(new TaskEntry<>(task, value));
         System.out.println(queue.size());
         for (int i = 0; i < threadCount; i++) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("Thread started");
                     while (existTask()) {
-                        TaskEntry<Task, Object> taskEntry = queue.remove();
-                        taskEntry.getKey().run(taskEntry.getValue());
+                        queue.remove().run();
                     }
                 }
             }).start();
         }
+    }
 
-        return true;
+    public <V> boolean run(Task<V> task) {
+        return queue.add(task);
     }
 
     public boolean existTask() {

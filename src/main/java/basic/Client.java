@@ -10,7 +10,7 @@ public class Client {
     public void generate() {
         int i = 1;
         while (i < 100) {
-            taskRunner.run(new TaskImpl<>(), i++);
+            taskRunner.run(new Task<>(i++));
         }
     }
 }
