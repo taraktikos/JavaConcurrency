@@ -8,7 +8,7 @@ public class TaskRunnerImpl implements TaskRunner {
     private final Queue<Task> queue = new LinkedList<>();
 
     TaskRunnerImpl() {
-        this(2);
+        this(5);
     }
 
     TaskRunnerImpl(int threadCount) {
@@ -17,9 +17,23 @@ public class TaskRunnerImpl implements TaskRunner {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("Thread started");
-                    while (existTask()) {
-                        queue.remove().run();
+                    try {
+                        String name = Thread.currentThread().getName();
+                        System.out.println(name + " started");
+                        while (true) {
+                            Task task;
+                            synchronized (queue) {
+                                while (queue.isEmpty()) {
+                                    System.out.println(name + " waiting");
+                                    queue.wait();
+                                }
+                                task = queue.remove();
+                            }
+                            task.run();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        //Thread.currentThread().interrupt();
                     }
                 }
             }).start();
@@ -27,10 +41,11 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     public <V> boolean run(Task<V> task) {
-        return queue.add(task);
-    }
-
-    public boolean existTask() {
-        return queue.size() > 0;
+        synchronized (queue) {
+            System.out.println("added " + task.getTaskId());
+            queue.add(task);
+            queue.notify();
+        }
+        return true;
     }
 }

@@ -13,14 +13,15 @@ public class Task<V> implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(getTaskId() + " started");
+        String name = Thread.currentThread().getName();
+        System.out.println(getTaskId() + "(" + name + ") started");
         try {
-            System.out.println(getTaskId() + " value = " + value.toString());
-            TimeUnit.SECONDS.sleep(3);
+            System.out.println(getTaskId() + "(" + name + ") value = " + value.toString());
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(getTaskId() + " ended");
+        System.out.println(getTaskId() + "(" + name + ") ended");
     }
 
     public String getTaskId() {
