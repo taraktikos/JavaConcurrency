@@ -23,14 +23,12 @@ public class TaskRunnerImpl implements TaskRunner {
                         System.out.println(name + " started");
                         while (true) {
                             Task task;
-                            synchronized (queue) {
+                            synchronized (_this) {
                                 while (queue.isEmpty()) {
                                     System.out.println(name + " waiting");
                                     queue.wait();
                                 }
                                 task = queue.remove();
-                            }
-                            synchronized (_this) {
                                 _this.notify();
                             }
                             task.run();
@@ -44,23 +42,19 @@ public class TaskRunnerImpl implements TaskRunner {
         }
     }
 
-    public <V> boolean run(Task<V> task) {
-        synchronized (this) {
-            while (queue.size() == 20) {
-                System.out.println("Queue have 20 elements and waiting");
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    //Thread.currentThread().interrupt();
-                }
+    public synchronized <V> boolean run(Task<V> task) {
+        while (queue.size() == 20) {
+            System.out.println("Queue have 20 elements and waiting");
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                //Thread.currentThread().interrupt();
             }
         }
-        synchronized (queue) {
-            System.out.println("added " + task.getTaskId());
-            queue.add(task);
-            queue.notify();
-        }
+        System.out.println("added " + task.getTaskId());
+        queue.add(task);
+        notify();
         return true;
     }
 }
