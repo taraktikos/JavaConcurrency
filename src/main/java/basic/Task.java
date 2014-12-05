@@ -18,7 +18,7 @@ public class Task<V> implements Runnable {
         try {
             System.out.println(getTaskId() + "(" + name + ") value = " + value.toString());
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(getTaskId() + "(" + name + ") ended");

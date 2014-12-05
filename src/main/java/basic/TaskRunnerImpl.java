@@ -6,14 +6,17 @@ import java.util.Queue;
 public class TaskRunnerImpl implements TaskRunner {
 
     private final Queue<Task> queue = new LinkedList<>();
+    private final int queueSize;
+    private final Object lockFull = new Object();
+    private final Object lockEmpty = new Object();
 
     TaskRunnerImpl() {
-        this(2);
+        this(2, 20);
     }
 
-    TaskRunnerImpl(int threadCount) {
+    TaskRunnerImpl(int threadCount, int queueSize) {
+        this.queueSize = queueSize;
         System.out.println(queue.size());
-        TaskRunnerImpl _this = this;
         for (int i = 0; i < threadCount; i++) {
             new Thread(new Runnable() {
                 @Override
@@ -23,13 +26,15 @@ public class TaskRunnerImpl implements TaskRunner {
                         System.out.println(name + " started");
                         while (true) {
                             Task task;
-                            synchronized (_this) {
+                            synchronized (lockEmpty) {
                                 while (queue.isEmpty()) {
                                     System.out.println(name + " waiting");
-                                    queue.wait();
+                                    lockEmpty.wait();
                                 }
                                 task = queue.remove();
-                                _this.notify();
+                            }
+                            synchronized (lockFull) {
+                                lockFull.notifyAll();
                             }
                             task.run();
                         }
@@ -42,19 +47,23 @@ public class TaskRunnerImpl implements TaskRunner {
         }
     }
 
-    public synchronized <V> boolean run(Task<V> task) {
-        while (queue.size() == 20) {
-            System.out.println("Queue have 20 elements and waiting");
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                //Thread.currentThread().interrupt();
+    public <V> boolean run(Task<V> task) {
+        synchronized (lockFull) {
+            while (queue.size() == queueSize) {
+                System.out.println("Queue have " + queueSize + " elements and waiting");
+                try {
+                    lockFull.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    //Thread.currentThread().interrupt();
+                }
+            }
+            synchronized (lockEmpty) {
+                System.out.println("added " + task.getTaskId());
+                queue.add(task);
+                lockEmpty.notifyAll();
             }
         }
-        System.out.println("added " + task.getTaskId());
-        queue.add(task);
-        notify();
         return true;
     }
 }
