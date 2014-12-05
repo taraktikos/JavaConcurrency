@@ -34,7 +34,7 @@ public class TaskRunnerImpl implements TaskRunner {
                                 task = queue.remove();
                             }
                             synchronized (lockFull) {
-                                lockFull.notifyAll();
+                                lockFull.notify();
                             }
                             task.run();
                         }
@@ -61,7 +61,7 @@ public class TaskRunnerImpl implements TaskRunner {
             synchronized (lockEmpty) {
                 System.out.println("added " + task.getTaskId());
                 queue.add(task);
-                lockEmpty.notifyAll();
+                lockEmpty.notify();
             }
         }
         return true;
