@@ -2,7 +2,6 @@ package image;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
-
 import java.io.File;
 
 public class Resize implements Runnable {
