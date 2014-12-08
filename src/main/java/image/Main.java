@@ -2,22 +2,31 @@ package image;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
+        String[] names = new String[]{
+                "/home/taras/Pictures/test.png"
+        };
 
-        ArrayList<String> list = new ArrayList<>();
-        list.add("/home/taras/Pictures/test.png");
-        new Resize("/home/taras/Pictures/test.png", 800, 600, new ResizeCallback() {
-            @Override
-            public void call(String file) {
-                System.out.println("Callback " + file);
-                list.add(file);
-            }
-        }).run();
+        Map<String, ArrayList<String>> resizedImages = new HashMap<>();
 
-        new Animate(list).run();
+        for (String originalName: names) {
+            ArrayList<String> list = new ArrayList<>();
+            list.add(originalName);
+            resizedImages.put(originalName, list);
+            new Resize(originalName, 800, 600, new ResizeCallback() {
+                @Override
+                public void call(String file) {
+                    System.out.println("Callback " + file);
+                    resizedImages.get(originalName).add(file);
+                }
+            }).run();
+            new Animate(resizedImages.get(originalName)).run();
+        }
 
         System.out.println("Done");
     }
