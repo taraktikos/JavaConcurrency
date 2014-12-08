@@ -31,7 +31,7 @@ public class Resize implements Runnable {
         int pointPosition = file.getName().lastIndexOf(".");
         String ext = file.getName().substring(pointPosition);
         String oldName = file.getName().substring(0, pointPosition);
-        String newFileName = file.getParentFile() + "/" + oldName + width + "x" + height + ext;
+        String newFileName = file.getParentFile() + "/generated/" + oldName + width + "x" + height + ext;
         try {
             cmd.run(operation, newFileName);
             System.out.println(getTaskId() + "(" + newFileName + ") created");

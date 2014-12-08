@@ -31,7 +31,7 @@ public class Animate implements Runnable {
         String ext = ".gif";
         String oldName = file.getName().substring(0, pointPosition);
 
-        String newFileName = file.getParentFile() + "/" + oldName + ext;
+        String newFileName = file.getParentFile() + "/generated/" + oldName + ext;
         try {
             cmd.run(createAnimation, newFileName);
             System.out.println(getTaskId() + "Animate end " + newFileName);
