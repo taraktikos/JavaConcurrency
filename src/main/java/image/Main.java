@@ -18,13 +18,15 @@ public class Main {
                 new File("images/123423.jpg").getAbsolutePath()
         };
         Map<String, ArrayList<String>> resizedImages = new HashMap<>();
-
+        int maxWidth = 600;
+        int minWidth = 100;
+        int step = 50;
         ExecutorService service = Executors.newFixedThreadPool(5);
         for (String originalName: names) {
             ArrayList<String> list = new ArrayList<>();
             list.add(originalName);
             resizedImages.put(originalName, list);
-            for (int width = 600; width > 100; width-=50) {
+            for (int width = maxWidth; width > minWidth; width-=step) {
                 service.submit(new Resize(originalName, width, new ResizeCallback() {
                     @Override
                     public void call(String file) {
@@ -32,7 +34,7 @@ public class Main {
                         ArrayList<String> images = resizedImages.get(originalName);
                         images.add(file);
                         System.out.println("size" + images.size());
-                        if (images.size() == 11) {
+                        if (images.size() == (maxWidth - minWidth) / step + 1) {
                             service.submit(new Animate(images));
                         }
                     }
@@ -40,7 +42,6 @@ public class Main {
             }
             //new Animate(resizedImages.get(originalName)).run();
         }
-
         System.out.println("Done");
     }
 }
