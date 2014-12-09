@@ -4,6 +4,7 @@ import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Animate implements Runnable {
     private static int counter = 1;
@@ -11,6 +12,12 @@ public class Animate implements Runnable {
     private final ArrayList<String> files;
 
     public Animate(ArrayList<String> files) {
+        files.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o2.compareTo(o1);
+            }
+        });
         this.files = files;
     }
 
@@ -31,7 +38,7 @@ public class Animate implements Runnable {
         String ext = ".gif";
         String oldName = file.getName().substring(0, pointPosition);
 
-        String newFileName = file.getParentFile() + "/generated/" + oldName + ext;
+        String newFileName = file.getParentFile() + "/" + oldName + ext;
         try {
             cmd.run(createAnimation, newFileName);
             System.out.println(getTaskId() + "Animate end " + newFileName);
