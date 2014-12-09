@@ -3,21 +3,14 @@ package image;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.List;
 
 public class Animate implements Runnable {
     private static int counter = 1;
     private final int id = counter++;
-    private final ArrayList<String> files;
+    private final List<String> files;
 
-    public Animate(ArrayList<String> files) {
-        files.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o2.compareTo(o1);
-            }
-        });
+    public Animate(List<String> files) {
         this.files = files;
     }
 

@@ -2,9 +2,7 @@ package image;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,30 +15,27 @@ public class Main {
                 new File("images/1924254.jpg").getAbsolutePath(),
                 new File("images/123423.jpg").getAbsolutePath()
         };
-        Map<String, ArrayList<String>> resizedImages = new HashMap<>();
         int maxWidth = 600;
         int minWidth = 100;
         int step = 50;
         ExecutorService service = Executors.newFixedThreadPool(5);
         for (String originalName: names) {
-            ArrayList<String> list = new ArrayList<>();
-            list.add(originalName);
-            resizedImages.put(originalName, list);
+            NavigableMap<Integer, String> imageNames = new TreeMap<>();
+            imageNames.put(maxWidth, originalName);
             for (int width = maxWidth; width > minWidth; width-=step) {
-                service.submit(new Resize(originalName, width, new ResizeCallback() {
-                    @Override
-                    public void call(String file) {
-                        System.out.println("Callback " + file);
-                        ArrayList<String> images = resizedImages.get(originalName);
-                        images.add(file);
-                        System.out.println("size" + images.size());
-                        if (images.size() == (maxWidth - minWidth) / step + 1) {
-                            service.submit(new Animate(images));
-                        }
-                    }
-                }));
+                File file = new File(originalName);
+                int pointPosition = file.getName().lastIndexOf(".");
+                String ext = file.getName().substring(pointPosition);
+                String oldName = file.getName().substring(0, pointPosition);
+                String newFileName = file.getParentFile() + "/generated/" + oldName + width + ext;
+                imageNames.put(width, newFileName);
             }
-            //new Animate(resizedImages.get(originalName)).run();
+            ResizeCallback callback = new ResizeCallbackImpl(service, new ArrayList<>(imageNames.descendingMap().values()));
+            for(Map.Entry<Integer, String> entry : imageNames.entrySet()) {
+                Integer width = entry.getKey();
+                String newName = entry.getValue();
+                service.submit(new Resize(originalName, newName, width, callback));
+            }
         }
         System.out.println("Done");
     }
