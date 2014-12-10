@@ -29,7 +29,7 @@ public class Resize implements Runnable {
         try {
             cmd.run(operation, newName);
             System.out.println(getTaskId() + "(" + newName + ") created");
-            callback.call(newName);
+            callback.call();
         } catch (Exception e) {
             e.printStackTrace();
         }

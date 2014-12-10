@@ -37,7 +37,7 @@ public class Animate implements Runnable {
         try {
             cmd.run(createAnimation, newFileName);
             System.out.println(getTaskId() + "Animate end " + newFileName);
-            callback.call(newFileName);
+            callback.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
