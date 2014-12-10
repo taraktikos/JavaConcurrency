@@ -9,9 +9,11 @@ public class Animate implements Runnable {
     private static int counter = 1;
     private final int id = counter++;
     private final List<String> files;
+    private Callback callback;
 
-    public Animate(List<String> files) {
+    public Animate(List<String> files, Callback callback) {
         this.files = files;
+        this.callback = callback;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class Animate implements Runnable {
         try {
             cmd.run(createAnimation, newFileName);
             System.out.println(getTaskId() + "Animate end " + newFileName);
+            callback.call(newFileName);
         } catch (Exception e) {
             e.printStackTrace();
         }

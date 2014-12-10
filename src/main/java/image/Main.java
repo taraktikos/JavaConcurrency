@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -19,6 +20,16 @@ public class Main {
         int minWidth = 100;
         int step = 50;
         ExecutorService service = Executors.newFixedThreadPool(5);
+        Callback lastAnimateCallback = new Callback() {
+            private AtomicInteger countAnimations = new AtomicInteger(names.length);
+            @Override
+            public void call(String file) {
+                if (countAnimations.decrementAndGet() == 0) {
+                    service.shutdown();
+                    System.out.println("Done");
+                }
+            }
+        };
         for (String originalName: names) {
             NavigableMap<Integer, String> imageNames = new TreeMap<>();
             imageNames.put(maxWidth, originalName);
@@ -30,13 +41,12 @@ public class Main {
                 String newFileName = file.getParentFile() + "/generated/" + oldName + width + ext;
                 imageNames.put(width, newFileName);
             }
-            ResizeCallback callback = new ResizeCallbackImpl(service, new ArrayList<>(imageNames.descendingMap().values()));
+            Callback callback = new ResizeCallback(service, new ArrayList<>(imageNames.descendingMap().values()), lastAnimateCallback);
             for(Map.Entry<Integer, String> entry : imageNames.entrySet()) {
                 Integer width = entry.getKey();
                 String newName = entry.getValue();
                 service.submit(new Resize(originalName, newName, width, callback));
             }
         }
-        System.out.println("Done");
     }
 }

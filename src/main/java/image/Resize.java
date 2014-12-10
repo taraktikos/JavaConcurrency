@@ -6,12 +6,12 @@ import org.im4java.core.IMOperation;
 public class Resize implements Runnable {
     private static int counter = 1;
     private final int id = counter++;
-    private final ResizeCallback callback;
+    private final Callback callback;
     private final String fileName;
     private final String newName;
     private final int width;
 
-    public Resize(String fileName, String newName, int width, ResizeCallback callback) {
+    public Resize(String fileName, String newName, int width, Callback callback) {
         this.fileName = fileName;
         this.newName = newName;
         this.width = width;
